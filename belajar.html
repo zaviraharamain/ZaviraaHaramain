@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belajar Haji & Umroh — Zavira Haramain</title>
+  <style>
+    /* =========================================================
+       VARIABEL WARNA — sama dengan landing page
+       ========================================================= */
+    :root {
+      --primary: #2e7d32;
+      --primary-light: #4caf50;
+      --primary-dark: #1b5e20;
+      --secondary: #1565c0;
+      --accent: #757575;
+      --bg-main: #ffffff;
+      --bg-section: #e3f2fd;
+      --bg-sidebar: #f5f5f5;
+      --bg-dark: #1a1a2e;
+      --text-main: #1a1a1a;
+      --text-secondary: #ffffff;
+      --text-muted: #546e7a;
+      --border-color: #e0e0e0;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --transition: all 0.25s ease;
+      --sidebar-width: 300px;
+      --header-height: 64px;
+    }
+
+    /* =========================================================
+       RESET & BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    strong, b { font-weight: 700; }
+
+    /* =========================================================
+       HEADER ATAS
+       ========================================================= */
+    .lms-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background: var(--primary-dark);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: var(--shadow-md);
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .header-brand .icon { font-size: 1.6rem; }
+    .header-brand span { color: var(--primary-light); }
+    .header-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .header-back:hover { background: rgba(255,255,255,0.25); }
+
+    /* Tombol hamburger sidebar untuk mobile */
+    .sidebar-toggle {
+      display: none;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    /* =========================================================
+       LAYOUT UTAMA — Sidebar + Konten
+       ========================================================= */
+    .lms-body {
+      display: flex;
+      padding-top: var(--header-height);
+      min-height: 100vh;
+    }
+
+    /* =========================================================
+       SIDEBAR — Daftar Bab
+       ========================================================= */
+    .sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 900;
+      transition: transform 0.3s ease;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+    .sidebar-header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid var(--border-color);
+      background: white;
+    }
+    .sidebar-header h2 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .sidebar-header p {
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* Progress bar belajar */
+    .progress-wrap {
+      padding: 14px 20px;
+      background: white;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Daftar bab & subbab di sidebar */
+    .bab-list { padding: 12px 0 80px; }
+
+    .bab-item { margin-bottom: 4px; }
+
+    /* Tombol bab (induk) */
+    .bab-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      transition: var(--transition);
+      border-radius: 0;
+    }
+    .bab-toggle:hover { background: rgba(46,125,50,0.07); color: var(--primary); }
+    .bab-toggle.active { color: var(--primary); background: rgba(46,125,50,0.1); }
+
+    .bab-toggle .bab-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: var(--border-color);
+      border-radius: 50%;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+    .bab-toggle.active .bab-num {
+      background: var(--primary);
+      color: white;
+    }
+    .bab-toggle .bab-label { flex: 1; }
+    .bab-toggle .chevron {
+      font-size: 0.7rem;
+      transition: transform 0.25s ease;
+      color: var(--accent);
+    }
+    .bab-toggle.open .chevron { transform: rotate(180deg); }
+
+    /* Subbab di dalam bab */
+    .subbab-list {
+      display: none;
+      background: white;
+      border-left: 3px solid var(--border-color);
+      margin-left: 20px;
+    }
+    .subbab-list.open { display: block; }
+
+    .subbab-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      border-radius: 0;
+    }
+    .subbab-link:hover { color: var(--primary); background: rgba(46,125,50,0.05); }
+    .subbab-link.active {
+      color: var(--primary);
+      font-weight: 700;
+      background: rgba(46,125,50,0.08);
+      border-right: 3px solid var(--primary);
+    }
+    .subbab-link .check {
+      font-size: 0.7rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: transparent;
+    }
+    .subbab-link.done .check {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* =========================================================
+       AREA KONTEN UTAMA
+       ========================================================= */
+    .lms-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Breadcrumb navigasi lokasi */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 40px;
+      background: white;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      position: sticky;
+      top: var(--header-height);
+      z-index: 100;
+    }
+    .breadcrumb .sep { color: var(--border-color); }
+    .breadcrumb .current { color: var(--primary); font-weight: 600; }
+
+    /* Konten tiap subbab */
+    .materi-panel {
+      display: none;
+      padding: 40px;
+      max-width: 860px;
+      animation: fadeIn 0.3s ease;
+    }
+    .materi-panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Layar selamat datang saat belum memilih materi */
+    .welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - var(--header-height) - 60px);
+      padding: 40px;
+      text-align: center;
+    }
+    .welcome-screen .big-icon { font-size: 5rem; margin-bottom: 24px; }
+    .welcome-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
+    .welcome-screen p { color: var(--text-muted); font-size: 1rem; max-width: 420px; }
+
+    /* Judul materi / subbab */
+    .materi-header { margin-bottom: 32px; }
+    .materi-bab-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .materi-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .materi-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .materi-meta span { display: flex; align-items: center; gap: 4px; }
+    .divider { border: none; border-top: 2px solid var(--border-color); margin: 28px 0; }
+
+    /* =========================================================
+       KOMPONEN KONTEN MATERI
+       ========================================================= */
+
+    /* Teks paragraf biasa */
+    .materi-panel p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 0.97rem;
+    }
+    .materi-panel h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 32px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--bg-section);
+    }
+    .materi-panel h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 24px 0 10px;
+    }
+    .materi-panel h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 16px 0 8px;
+    }
+
+    /* Kotak peringatan / info penting */
+    .alert-box {
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin: 20px 0;
+      border-left: 5px solid;
+      font-size: 0.93rem;
+    }
+    .alert-box.warning {
+      background: #fff8e1;
+      border-color: #f9a825;
+      color: #6d4c00;
+    }
+    .alert-box.info {
+      background: var(--bg-section);
+      border-color: var(--secondary);
+      color: #1a3a6b;
+    }
+    .alert-box.danger {
+      background: #ffebee;
+      border-color: #c62828;
+      color: #7f0000;
+    }
+    .alert-box.success {
+      background: #e8f5e9;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+    .alert-box strong { display: block; margin-bottom: 4px; }
+
+    /* Tabel ringkasan */
+    .materi-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.88rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .materi-table thead tr { background: var(--primary); color: white; }
+    .materi-table th, .materi-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .materi-table tbody tr:nth-child(even) { background: var(--bg-section); }
+    .materi-table tbody tr:hover { background: rgba(46,125,50,0.06); }
+    .materi-table .batal { color: #c62828; font-weight: 700; }
+    .materi-table .sah { color: var(--primary-dark); font-weight: 700; }
+
+    /* Langkah urutan (numbered steps) */
+    .step-list { margin: 16px 0; }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .step-content h4 { margin: 0 0 4px; font-size: 0.97rem; }
+    .step-content p { margin: 0; font-size: 0.88rem; }
+
+    /* Card urutan dam */
+    .dam-chain {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 24px;
+    }
+    .dam-chain .dam-item {
+      background: white;
+      border: 2px solid var(--primary-light);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-align: center;
+    }
+    .dam-chain .arrow {
+      color: var(--accent);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    /* Grid pilihan (untuk fidyah pilihan) */
+    .pilihan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .pilihan-item {
+      background: white;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      font-size: 0.88rem;
+      transition: var(--transition);
+    }
+    .pilihan-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .pilihan-item .pilihan-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .pilihan-item strong { display: block; color: var(--primary-dark); margin-bottom: 4px; }
+
+    /* Quote hadis */
+    .hadis-quote {
+      background: var(--bg-section);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      margin: 20px 0;
+      border-left: 5px solid var(--primary);
+      font-style: italic;
+    }
+    .hadis-quote .arab {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-align: right;
+      direction: rtl;
+      font-style: normal;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .hadis-quote .terjemah { color: var(--text-muted); font-size: 0.95rem; }
+    .hadis-quote .sumber { display: block; font-size: 0.8rem; color: var(--accent); margin-top: 8px; font-style: normal; }
+
+    /* Gambar di dalam materi */
+    .materi-img {
+      width: 100%;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin: 20px 0;
+      object-fit: cover;
+    }
+    .img-caption {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -12px;
+      margin-bottom: 20px;
+    }
+
+    /* Embed iframe (video, canva, game) */
+    .embed-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* Rasio 16:9 */
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 20px 0;
+      box-shadow: var(--shadow-md);
+      background: var(--bg-sidebar);
+    }
+    .embed-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .embed-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    /* =========================================================
+       NAVIGASI BAWAH — Tombol Sebelumnya / Selanjutnya
+       ========================================================= */
+    .materi-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 40px;
+      border-top: 1px solid var(--border-color);
+      background: white;
+      gap: 12px;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+      background: white;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .nav-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .nav-btn:disabled { opacity: 0.3; cursor: default; }
+    .nav-btn.next {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .nav-btn.next:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+    /* Tandai Selesai */
+    .done-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+      background: white;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .done-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .done-btn.marked { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* =========================================================
+       RESPONSIVE — Mobile
+       ========================================================= */
+    @media (max-width: 768px) {
+      :root { --sidebar-width: 0px; }
+
+      .sidebar-toggle { display: flex; align-items: center; }
+
+      .sidebar {
+        transform: translateX(-300px);
+        width: 300px;
+        box-shadow: var(--shadow-md);
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      .lms-content { margin-left: 0; }
+
+      .materi-panel { padding: 24px 20px; }
+      .breadcrumb { padding: 12px 20px; }
+      .materi-nav { padding: 20px; }
+      .materi-title { font-size: 1.3rem; }
+
+      .pilihan-grid { grid-template-columns: 1fr; }
+      .dam-chain { flex-direction: column; align-items: flex-start; }
+
+      /* Overlay gelap saat sidebar terbuka di mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 850;
+        top: var(--header-height);
+      }
+      .sidebar-overlay.show { display: block; }
+    }
+
+    @media (max-width: 480px) {
+      .header-brand .label { display: none; }
+      .materi-table { font-size: 0.78rem; }
+      .materi-table th, .materi-table td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       HEADER ATAS
+       =================================================== -->
+  <header class="lms-header">
+    <div class="header-brand">
+      <span class="icon">🕌</span>
+      <div>
+        <span>Zavira</span>Haramain
+        <div style="font-size:0.68rem; font-weight:400; color:rgba(255,255,255,0.6); line-height:1;">Media Pembelajaran Manasik</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;">
+      <!-- Tombol hamburger untuk sidebar mobile -->
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Buka menu">☰</button>
+      <a href="index.html" class="header-back">← Kembali ke Beranda</a>
+    </div>
+  </header>
+
+  <!-- Overlay gelap untuk mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="lms-body">
+
+    <!-- ===================================================
+         SIDEBAR — DAFTAR BAB DAN SUBBAB
+         =================================================== -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-header">
+        <h2>📖 Daftar Materi</h2>
+        <p>Pendidikan Agama Islam — SMP & SMA</p>
+      </div>
+
+      <!-- Progress Belajar -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Progress Belajar</span>
+          <span id="progressText">0 / 18</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Daftar Bab -->
+      <div class="bab-list">
+
+        <!-- ====== BAB 1 ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">1</span>
+            <span class="bab-label">Konsep Dasar Haji & Umroh</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-1', this)">
+                <span class="check">✓</span> 1.1 Pengertian Haji & Umroh
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-2', this)">
+                <span class="check">✓</span> 1.2 Hukum Haji & Umroh
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-3', this)">
+                <span class="check">✓</span> 1.3 Perbedaan Haji dan Umroh
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-4', this)">
+                <span class="check">✓</span> 1.4 Syarat Wajib
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-5', this)">
+                <span class="check">✓</span> 1.5 Dalil dan Niat
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('1-6', this)">
+                <span class="check">✓</span> 1.6 Hal-hal yang Membatalkan
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ====== BAB 2 ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">2</span>
+            <span class="bab-label">Alur Rangkaian Ibadah</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('2-1', this)">
+                <span class="check">✓</span> 2.1 Alur Rangkaian Ibadah Haji
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('2-2', this)">
+                <span class="check">✓</span> 2.2 Alur Rangkaian Ibadah Umroh
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ====== BAB 3 ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">3</span>
+            <span class="bab-label">Ziarah & Kota Suci</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('3-1', this)">
+                <span class="check">✓</span> 3.1 Keutamaan Makkah & Madinah
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('3-2', this)">
+                <span class="check">✓</span> 3.2 Adab di Masjid Nabawi
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('3-3', this)">
+                <span class="check">✓</span> 3.3 Situs Sejarah
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ====== BAB 4 ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">4</span>
+            <span class="bab-label">Kumpulan Doa</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('4-1', this)">
+                <span class="check">✓</span> 4.1 Kumpulan Doa Manasik
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ====== BAB 5 (MATERI BARU) ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">5</span>
+            <span class="bab-label">Pembatal, Dam & Kafarat</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-1', this)">
+                <span class="check">✓</span> 5.1 Hal-hal Pembatal Haji & Umroh
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-2', this)">
+                <span class="check">✓</span> 5.2 Pengertian & Jenis Dam
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-3', this)">
+                <span class="check">✓</span> 5.3 Dam Jimak Sebelum Tahallul
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-4', this)">
+                <span class="check">✓</span> 5.4 Dam Jimak Setelah Tahallul
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-5', this)">
+                <span class="check">✓</span> 5.5 Dam Meninggalkan Wajib Haji
+              </div>
+            </li>
+            <li>
+              <div class="subbab-link" onclick="loadMateri('5-6', this)">
+                <span class="check">✓</span> 5.6 Dam Fidyah & Berburu
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ====== BAB 6 ====== -->
+        <div class="bab-item">
+          <button class="bab-toggle" onclick="toggleBab(this)">
+            <span class="bab-num">6</span>
+            <span class="bab-label">Latihan & Kuis</span>
+            <span class="chevron">▼</span>
+          </button>
+          <ul class="subbab-list">
+            <li>
+              <div class="subbab-link" onclick="loadMateri('6-1', this)">
+                <span class="check">✓</span> 6.1 Uji Kemampuan Kamu
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div><!-- /bab-list -->
+    </aside><!-- /sidebar -->
+
+
+    <!-- ===================================================
+         AREA KONTEN UTAMA
+         =================================================== -->
+    <main class="lms-content">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb" id="breadcrumb">
+        <span>🏠 Beranda</span>
+        <span class="sep">›</span>
+        <span class="current" id="breadcrumbText">Pilih materi untuk mulai belajar</span>
+      </div>
+
+      <!-- =====================
+           WELCOME SCREEN
+           ===================== -->
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="big-icon">🕌</div>
+        <h1>Selamat Datang!</h1>
+        <p>Pilih salah satu materi di panel kiri untuk mulai belajar tentang Haji & Umroh.</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.1
+           ============================== -->
+      <div class="materi-panel" id="panel-1-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.1 Pengertian Haji & Umroh</h1>
+          <div class="materi-meta">
+            <span>📚 Materi Teks</span>
+            <span>⏱ ±5 menit</span>
+            <span>🎓 SMP & SMA</span>
+          </div>
+        </div>
+        <hr class="divider" />
+
+        <h2>Apa itu Haji?</h2>
+        <p>Secara harfiah, <strong>Haji</strong> dapat diartikan sebagai <em>tujuan</em>, <em>maksud</em>, dan <em>menyengaja</em> — yaitu bermaksud mendatangi tempat yang diagungkan, secara fisik dan jiwa ke Baitullah, untuk menunaikan amalan-amalan tertentu pada waktu tertentu.</p>
+        <p>Yang dimaksud dengan <strong>tempat tertentu</strong> adalah Ka'bah dan Arafah, sedangkan <strong>waktu tertentu</strong> adalah <em>asyhur al-haj</em> (bulan-bulan haji) yaitu Syawal, Zulkaidah, dan 10 hari pertama Zulhijah.</p>
+
+        <div class="alert-box info">
+          <strong>💡 Ingat!</strong>
+          Haji hanya dapat dilaksanakan pada bulan-bulan haji (Syawal–10 Zulhijjah). Di luar waktu itu, ibadah yang dilakukan tidak dapat disebut haji.
+        </div>
+
+        <h2>Apa itu Umroh?</h2>
+        <p><strong>Umrah</strong> secara harfiah berarti <em>ziarah</em> atau <em>berziarah ke tempat yang mulia</em>. Yaitu mengunjungi Baitullah untuk melaksanakan amalan-amalan tertentu yang terdiri atas <strong>tawaf, sa'i, dan bercukur</strong>.</p>
+        <p>Berbeda dengan haji, umroh <strong>tidak terikat waktu tertentu</strong> dan dapat dilaksanakan kapan saja sepanjang tahun.</p>
+
+        <h2>Ringkasan Perbandingan</h2>
+        <table class="materi-table">
+          <thead><tr><th>Aspek</th><th>Haji</th><th>Umroh</th></tr></thead>
+          <tbody>
+            <tr><td>Arti</td><td>Menyengaja / berkunjung</td><td>Ziarah</td></tr>
+            <tr><td>Waktu</td><td>Bulan Syawal–10 Zulhijjah</td><td>Kapan saja</td></tr>
+            <tr><td>Tempat utama</td><td>Ka'bah & Arafah</td><td>Ka'bah (Masjidil Haram)</td></tr>
+            <tr><td>Rukun utama</td><td>Ihram, Wukuf, Tawaf, Sa'i, Tahallul</td><td>Ihram, Tawaf, Sa'i, Tahallul</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.2
+           ============================== -->
+      <div class="materi-panel" id="panel-1-2">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.2 Hukum Haji & Umroh</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±6 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box success">
+          <strong>📌 Hukum Haji</strong>
+          Haji adalah <strong>Rukun Islam yang Kelima</strong> — wajib bagi setiap Muslim yang memiliki kemampuan, sekali seumur hidup.
+        </div>
+
+        <p>Pelaksanaan haji merupakan ibadah <em>mahdah</em> (ibadah murni) yang bersifat <em>ta'abbudi</em> (semata-mata untuk mendekatkan diri kepada Allah). Pelaksanaannya mengandung banyak rahasia dan simbol mendalam.</p>
+
+        <h2>Makna Ibadah Haji</h2>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Simbol Persatuan Umat</h4>
+              <p>Haji merupakan muktamar akbar umat Islam sedunia. Ka'bah menjadi simbol kesatuan dan persatuan seluruh umat Muslim dari berbagai penjuru dunia.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Penyucian Diri</h4>
+              <p>Pakaian ihram menjadi simbol bahwa manusia harus melepaskan hawa nafsu dan hanya menghadapkan diri kepada Allah Yang Maha Agung.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Latihan Fisik & Mental</h4>
+              <p>Ibadah haji memerlukan persiapan fisik yang kuat, biaya besar, dan kesabaran menghadapi segala tantangan selama perjalanan.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>Menumbuhkan Semangat Berkorban</h4>
+              <p>Haji menumbuhkan semangat berkorban, baik harta, jiwa, tenaga, maupun waktu untuk melaksanakannya demi Allah SWT.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.3
+           ============================== -->
+      <div class="materi-panel" id="panel-1-3">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.3 Perbedaan Haji dan Umroh</h1>
+          <div class="materi-meta"><span>🖼️ Infografis</span><span>⏱ ±3 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <p>Berikut infografis yang menjelaskan perbedaan utama antara Haji dan Umroh secara visual:</p>
+
+        <img
+          src="https://i.ibb.co/Xf0K8t76/Chat-GPT-Image-May-2-2026-03-10-06-PM.png"
+          alt="Infografis perbedaan Haji dan Umroh"
+          class="materi-img"
+          onerror="this.style.display='none'; document.getElementById('img-fallback-1-3').style.display='flex';"
+        />
+        <div id="img-fallback-1-3" style="display:none; background:var(--bg-section); border-radius:var(--radius-md); padding:40px; text-align:center; color:var(--text-muted); margin:20px 0;">
+          🖼️ Gambar infografis tidak tersedia
+        </div>
+
+        <table class="materi-table">
+          <thead><tr><th>Aspek</th><th>Haji</th><th>Umroh</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Waktu</strong></td><td>Terikat (Syawal–10 Zulhijjah)</td><td>Bebas, kapan saja</td></tr>
+            <tr><td><strong>Wukuf di Arafah</strong></td><td>✅ Ada (rukun utama)</td><td>❌ Tidak ada</td></tr>
+            <tr><td><strong>Mabit di Mina/Muzdalifah</strong></td><td>✅ Ada</td><td>❌ Tidak ada</td></tr>
+            <tr><td><strong>Lempar Jumrah</strong></td><td>✅ Ada</td><td>❌ Tidak ada</td></tr>
+            <tr><td><strong>Durasi</strong></td><td>Min. 4–6 hari</td><td>Beberapa jam</td></tr>
+            <tr><td><strong>Hukum</strong></td><td>Wajib (Rukun Islam ke-5)</td><td>Wajib (menurut sebagian ulama)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.4
+           ============================== -->
+      <div class="materi-panel" id="panel-1-4">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.4 Syarat Wajib Haji</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±8 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <p>Syarat wajib haji adalah ketentuan yang harus dipenuhi agar seseorang terkena kewajiban melaksanakan ibadah haji. Ada <strong>5 syarat wajib</strong> yang harus dipenuhi:</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Islam</h4>
+              <p>Ibadah haji hanya diwajibkan kepada orang yang telah memeluk agama Islam. Tanpa iman, amal ibadah tidak memiliki nilai di sisi Allah.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Baligh</h4>
+              <p>Telah mencapai usia dewasa menurut syariat. Anak-anak yang belum baligh tidak diwajibkan haji — meski jika mereka melaksanakannya, hajinya tetap sah sebagai ibadah sunnah.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Berakal (Aqil)</h4>
+              <p>Memiliki kemampuan berpikir dan memahami. Orang yang kehilangan kesadaran atau mengalami gangguan jiwa berat tidak dikenai kewajiban haji.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>Merdeka</h4>
+              <p>Dalam konteks klasik, bukan seorang budak. Secara modern, syarat ini menunjukkan bahwa kewajiban haji hanya berlaku bagi orang yang memiliki kebebasan atas dirinya.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <h4>Mampu (Istitha'ah)</h4>
+              <p>Mencakup: kemampuan fisik (sehat), kemampuan finansial (biaya cukup), keamanan perjalanan, dan bagi perempuan: adanya mahram atau rombongan yang aman.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert-box warning">
+          <strong>⚠️ Perhatian!</strong>
+          Jika salah satu syarat di atas belum terpenuhi, kewajiban haji belum berlaku atas diri seseorang.
+        </div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.5
+           ============================== -->
+      <div class="materi-panel" id="panel-1-5">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.5 Dalil dan Niat Haji & Umroh</h1>
+          <div class="materi-meta"><span>🎬 Video</span><span>⏱ ±5 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <p>Simak video berikut yang menjelaskan dalil-dalil Al-Qur'an dan hadis tentang ibadah haji, serta tata cara melafalkan niat haji dan umroh:</p>
+
+        <div class="embed-wrap">
+          <iframe
+            src="https://www.canva.com/design/DAHIqXgKJt4/ts3JvFdb-NQ1UfgRgLYqsw/watch?embed"
+            allowfullscreen
+            allow="fullscreen"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <p class="embed-label">📽️ Video Dalil dan Niat Haji & Umroh</p>
+
+        <div class="alert-box info">
+          <strong>📌 Catatan</strong>
+          Hafalkanlah niat ihram haji dan umroh dengan baik. Niat adalah rukun pertama yang menentukan jenis ibadah yang akan dilaksanakan.
+        </div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 1.6
+           ============================== -->
+      <div class="materi-panel" id="panel-1-6">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 1 · Konsep Dasar Haji & Umroh</div>
+          <h1 class="materi-title">1.6 Hal-hal yang Membatalkan Haji & Umroh</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±7 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box danger">
+          <strong>⚠️ Penting Dipahami</strong>
+          Ibadah haji dan umroh dinyatakan batal apabila salah satu <strong>rukun</strong>-nya ditinggalkan, atau terjadi pelanggaran berat. Materi lengkap tentang ini dibahas di <strong>Bab 5</strong>.
+        </div>
+
+        <p>Secara ringkas, hal-hal yang dapat membatalkan haji atau umroh meliputi:</p>
+
+        <table class="materi-table">
+          <thead><tr><th>Pembatal</th><th>Berlaku untuk</th><th>Akibat</th></tr></thead>
+          <tbody>
+            <tr><td>Jimak sebelum tahallul</td><td>Haji & Umroh</td><td class="batal">Batal + Wajib Qadha</td></tr>
+            <tr><td>Meninggalkan Wuquf di Arafah</td><td>Haji</td><td class="batal">Batal, tidak bisa diganti dam</td></tr>
+            <tr><td>Meninggalkan Tawaf Ifadhah</td><td>Haji & Umroh</td><td class="batal">Batal, wajib dikerjakan langsung</td></tr>
+            <tr><td>Meninggalkan Sa'i</td><td>Haji & Umroh</td><td class="batal">Batal, tidak bisa diganti dam</td></tr>
+            <tr><td>Meninggalkan Tahallul</td><td>Haji & Umroh</td><td class="batal">Batal</td></tr>
+            <tr><td>Tidak tertib rukun</td><td>Haji & Umroh</td><td class="batal">Tidak sah</td></tr>
+          </tbody>
+        </table>
+
+        <p>👉 Untuk penjelasan detail beserta <strong>Dam dan Kafarat</strong>, lanjutkan ke <strong>Bab 5</strong>!</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 2.1
+           ============================== -->
+      <div class="materi-panel" id="panel-2-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 2 · Alur Rangkaian Ibadah</div>
+          <h1 class="materi-title">2.1 Alur Rangkaian Ibadah Haji</h1>
+          <div class="materi-meta"><span>🖼️ Infografis + 🎬 Video</span><span>⏱ ±10 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <img
+          src="https://i.ibb.co/PvfS4JNm/Chat-GPT-Image-2-Mei-2026-14-36-10.png"
+          alt="Alur Rangkaian Ibadah Haji"
+          class="materi-img"
+          onerror="this.style.display='none';"
+        />
+        <p class="img-caption">Peta alur rangkaian ibadah haji dari awal hingga akhir</p>
+
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Ihram Haji — 8 Dzulhijjah</h4><p>Mandi sunnah, memakai pakaian ihram, dan mengucapkan niat ihram. Sejak saat ini seluruh larangan ihram berlaku.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Mabit di Mina (Hari Tarwiyah)</h4><p>Berangkat ke Mina untuk bermalam. Melaksanakan shalat secara qashar (diringkas).</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Wukuf di Arafah — 9 Dzulhijjah</h4><p><strong>Puncak haji!</strong> Berdiam di Arafah dari waktu Dzuhur hingga Maghrib. Memperbanyak doa, dzikir, dan istighfar.</p></div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-content"><h4>Mabit di Muzdalifah</h4><p>Setelah dari Arafah, bermalam di Muzdalifah. Mengumpulkan kerikil untuk lempar jumrah.</p></div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-content"><h4>Lontar Jumrah Aqabah & Tahallul — 10 Dzulhijjah</h4><p>Melempar 7 batu ke pilar Aqabah, lalu mencukur rambut (Tahallul Awal). Sebagian larangan ihram mulai dicabut.</p></div></div>
+          <div class="step-item"><div class="step-num">6</div><div class="step-content"><h4>Penyembelihan Dam/Kurban</h4><p>Bagi jemaah Haji Tamattu', diwajibkan menyembelih seekor kambing sebagai hadyu.</p></div></div>
+          <div class="step-item"><div class="step-num">7</div><div class="step-content"><h4>Tawaf Ifadhah & Sa'i</h4><p>Kembali ke Masjidil Haram untuk tawaf 7 putaran dan sa'i 7 kali. Setelah ini terjadi Tahallul Tsani — seluruh larangan ihram berakhir.</p></div></div>
+          <div class="step-item"><div class="step-num">8</div><div class="step-content"><h4>Mabit di Mina & Lontar 3 Jumrah — 11–13 Dzulhijjah</h4><p>Melempar tiga jumrah (Ula, Wustha, Aqabah) setiap harinya. Jemaah bisa memilih Nafar Awal atau Nafar Tsani.</p></div></div>
+          <div class="step-item"><div class="step-num">9</div><div class="step-content"><h4>Tawaf Wada'</h4><p>Tawaf perpisahan sebelum meninggalkan Makkah. Tidak disertai sa'i.</p></div></div>
+        </div>
+
+        <div class="embed-wrap">
+          <iframe src="https://www.canva.com/design/DAHIqS2E7v0/lFdgQTA9Gmf85khZnDJb_A/watch?embed" allowfullscreen allow="fullscreen" loading="lazy"></iframe>
+        </div>
+        <p class="embed-label">🎬 Video animasi alur haji oleh Zayyan Novalaziz</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 2.2
+           ============================== -->
+      <div class="materi-panel" id="panel-2-2">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 2 · Alur Rangkaian Ibadah</div>
+          <h1 class="materi-title">2.2 Alur Rangkaian Ibadah Umroh</h1>
+          <div class="materi-meta"><span>🎬 Video</span><span>⏱ ±5 menit</span></div>
+        </div>
+        <hr class="divider" />
+        <p>Berbeda dengan haji, rangkaian Umroh lebih singkat dan bisa dilakukan kapan saja. Urutan rukunnya:</p>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Ihram</h4><p>Mengambil miqat, memakai pakaian ihram, dan niat ihram untuk umroh.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Tawaf</h4><p>Mengelilingi Ka'bah sebanyak 7 putaran, dimulai dari Hajar Aswad.</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Sa'i</h4><p>Berjalan antara bukit Shafa dan Marwah sebanyak 7 kali.</p></div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-content"><h4>Tahallul</h4><p>Mencukur atau memotong rambut sebagai tanda berakhirnya ihram umroh.</p></div></div>
+        </div>
+        <div class="embed-wrap">
+          <iframe src="https://www.youtube.com/embed/vuquArQIT4U" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <p class="embed-label">🎬 Video tata cara ibadah umroh</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 3.1
+           ============================== -->
+      <div class="materi-panel" id="panel-3-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 3 · Ziarah & Kota Suci</div>
+          <h1 class="materi-title">3.1 Keutamaan Makkah & Madinah</h1>
+          <div class="materi-meta"><span>🎬 Presentasi</span><span>⏱ ±5 menit</span></div>
+        </div>
+        <hr class="divider" />
+        <p>Pelajari keutamaan dua kota suci utama dalam Islam — Makkah Al-Mukarramah dan Madinah Al-Munawwarah — melalui presentasi berikut:</p>
+        <div class="embed-wrap">
+          <iframe src="https://www.canva.com/design/DAHIf-sXLVc/xY1zw2fpSDof6yYyU6dX6Q/view?embed" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <p class="embed-label">📊 Presentasi Keutamaan Makkah & Madinah</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 3.2
+           ============================== -->
+      <div class="materi-panel" id="panel-3-2">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 3 · Ziarah & Kota Suci</div>
+          <h1 class="materi-title">3.2 Adab di Masjid Nabawi</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±5 menit</span></div>
+        </div>
+        <hr class="divider" />
+        <div class="alert-box info"><strong>🚧 Materi Segera Hadir</strong>Materi tentang adab di Masjid Nabawi sedang dalam pengembangan. Silakan cek kembali berikutnya.</div>
+        <p>Topik yang akan dibahas meliputi:</p>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Tata cara masuk masjid</h4><p>Mendahulukan kaki kanan, membaca doa masuk masjid, dan lain-lain.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Adab berziarah ke makam Nabi SAW</h4><p>Cara memberi salam kepada Rasulullah SAW dan para sahabat.</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Shalat Arbain</h4><p>Keutamaan dan tata cara shalat 40 waktu berturut-turut di Masjid Nabawi.</p></div></div>
+        </div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 3.3
+           ============================== -->
+      <div class="materi-panel" id="panel-3-3">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 3 · Ziarah & Kota Suci</div>
+          <h1 class="materi-title">3.3 Situs Sejarah</h1>
+          <div class="materi-meta"><span>🎬 Video</span><span>⏱ ±8 menit</span></div>
+        </div>
+        <hr class="divider" />
+        <p>Jelajahi situs-situs bersejarah Islam di Makkah dan Madinah melalui video dokumenter berikut:</p>
+        <div class="embed-wrap">
+          <iframe src="https://www.youtube.com/embed/Qm-tNo5T-Nk" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <p class="embed-label">🎬 Dokumenter Situs Sejarah Islam</p>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 4.1
+           ============================== -->
+      <div class="materi-panel" id="panel-4-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 4 · Kumpulan Doa</div>
+          <h1 class="materi-title">4.1 Kumpulan Doa Manasik</h1>
+          <div class="materi-meta"><span>🎬 Presentasi Doa</span><span>⏱ ±10 menit</span></div>
+        </div>
+        <hr class="divider" />
+        <p>Kumpulan doa-doa manasik yang perlu dihafal selama ibadah haji dan umroh, mulai dari niat ihram hingga doa tawaf wada':</p>
+        <div class="embed-wrap">
+          <iframe src="https://www.canva.com/design/DAHIgMuOij8/v3etyEsx0xxedw--Voma4g/view?embed" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <p class="embed-label">📿 Kumpulan Doa Manasik Haji & Umroh</p>
+        <div class="alert-box success"><strong>💡 Tips Menghafal</strong>Ulangi setiap doa minimal 5 kali sebelum lanjut ke doa berikutnya. Gunakan fitur Latihan Bacaan Doa di aplikasi untuk berlatih pelafalan yang benar!</div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.1 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.1 Hal-hal yang Membatalkan Haji & Umroh</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±10 menit</span><span>🎓 SMP & SMA</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box danger">
+          <strong>📌 Pengertian Penting</strong>
+          Ibadah haji dan umroh dinyatakan <strong>tidak sah (batal)</strong> apabila salah satu rukunnya ditinggalkan, atau terjadi pelanggaran berat yang telah ditetapkan dalam fiqih ibadah.
+        </div>
+
+        <h2>1. Jimak Sebelum Tahallul Awal</h2>
+        <div class="alert-box warning"><strong>⚠️ Pembatal Terberat</strong>Di antara semua larangan ihram, jimak (hubungan suami-istri) adalah larangan paling berat dan berdampak paling serius terhadap keabsahan ibadah.</div>
+        <p>Dalam <strong>konteks haji</strong>, jimak yang dilakukan <strong>sebelum tahallul awal</strong> — yakni sebelum melempar jumrah Aqabah, mencukur rambut, dan tawaf ifadhah — secara langsung <strong>membatalkan haji</strong>.</p>
+        <p>Meski batal, jamaah <strong>tetap wajib</strong> meneruskan seluruh rangkaian ibadah hingga selesai. Kemudian wajib mengqadha hajinya tahun berikutnya, serta membayar dam paling berat: <strong>seekor unta</strong>.</p>
+        <p>Jika jimak dilakukan <strong>setelah tahallul awal</strong>, haji <strong>tetap sah</strong> namun dikenakan dam seekor kambing.</p>
+        <p>Dalam <strong>konteks umroh</strong>, jimak sebelum tahallul juga membatalkan umroh, dengan kewajiban meneruskan ibadah, mengqadha, dan membayar dam seekor kambing.</p>
+        <div class="alert-box info"><strong>Akibat Hukum Jimak Sebelum Tahallul Awal (Haji)</strong><br>• Haji batal — namun wajib diteruskan<br>• Wajib mengqadha haji tahun berikutnya<br>• Dam: 1 ekor unta (atau urutan penggantinya)</div>
+
+        <h2>2. Meninggalkan Wuquf di Arafah</h2>
+        <div class="hadis-quote">
+          <span class="arab">اَلْحَجُّ عَرَفَةُ</span>
+          <span class="terjemah">"Haji itu adalah berdiam di Arafah"</span>
+          <span class="sumber">— HR. Abu Dawud, Tirmidzi, Nasai, Ibnu Majah</span>
+        </div>
+        <p>Wuquf di Arafah adalah rukun haji yang paling agung. Dilaksanakan pada 9 Zulhijjah dari waktu Dzuhur hingga terbit fajar. Siapa pun yang tidak sempat wuquf, hajinya <strong>gugur dan tidak sah</strong>, meski seluruh rukun lainnya telah dikerjakan.</p>
+        <div class="alert-box danger"><strong>Akibat Hukum</strong><br>• Haji tidak sah (batal)<br>• Tidak ada dam yang dapat menggantikan rukun ini<br>• Wajib mengulang haji pada kesempatan berikutnya</div>
+
+        <h2>3. Meninggalkan Tawaf Ifadhah</h2>
+        <p>Tawaf ifadhah — mengelilingi Ka'bah 7 kali — merupakan rukun yang tidak bisa ditinggalkan, baik dalam haji maupun umroh. Jika tidak dilaksanakan, ibadah tidak sah dan <strong>tidak dapat diganti dengan dam</strong>.</p>
+
+        <h2>4. Meninggalkan Sa'i antara Shafa dan Marwah</h2>
+        <p>Sa'i mengabadikan perjuangan Siti Hajar mencari air untuk Nabi Ismail AS. Meninggalkan sa'i — baik dalam haji maupun umroh — menjadikan ibadah tidak sah. Satu-satunya cara adalah mengerjakannya secara langsung.</p>
+
+        <h2>5. Meninggalkan Tahallul</h2>
+        <p>Tahallul (mencukur/memendekkan rambut) adalah tanda keluar dari ihram. Meninggalkannya berarti meninggalkan rukun, sehingga haji maupun umroh menjadi tidak sah.</p>
+
+        <h2>6. Tidak Tertib dalam Rukun</h2>
+        <p>Tertib (mengerjakan rukun secara berurutan) merupakan bagian dari rukun itu sendiri. Sa'i harus dikerjakan setelah tawaf, bukan sebelumnya. Jika dilanggar tanpa alasan yang dibenarkan, ibadah dianggap tidak sah.</p>
+
+        <h2>Ringkasan Tabel</h2>
+        <table class="materi-table">
+          <thead><tr><th>Pembatal</th><th>Berlaku untuk</th><th>Status Ibadah</th></tr></thead>
+          <tbody>
+            <tr><td>Jimak sebelum tahallul awal</td><td>Haji & Umroh</td><td class="batal">Batal + Wajib Qadha</td></tr>
+            <tr><td>Meninggalkan Wuquf di Arafah</td><td>Haji saja</td><td class="batal">Batal, tidak bisa diganti dam</td></tr>
+            <tr><td>Meninggalkan Tawaf Ifadhah</td><td>Haji & Umroh</td><td class="batal">Batal, wajib dikerjakan langsung</td></tr>
+            <tr><td>Meninggalkan Sa'i</td><td>Haji & Umroh</td><td class="batal">Batal, tidak bisa diganti dam</td></tr>
+            <tr><td>Meninggalkan Tahallul</td><td>Haji & Umroh</td><td class="batal">Batal</td></tr>
+            <tr><td>Tidak tertib rukun</td><td>Haji & Umroh</td><td class="batal">Tidak sah</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.2 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-2">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.2 Pengertian & Jenis-jenis Dam</h1>
+          <div class="materi-meta"><span>📚 Materi + Tabel</span><span>⏱ ±8 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box info">
+          <strong>📖 Apa itu Dam?</strong>
+          <strong>Dam</strong> berasal dari bahasa Arab yang berarti <em>darah</em>, merujuk pada penyembelihan hewan sebagai bentuk tebusan (kafarat). Dam bukan sekadar hukuman, melainkan <strong>sarana penyucian diri</strong> dan bentuk tanggung jawab atas pelanggaran.
+        </div>
+
+        <h2>Kapan Dam Diwajibkan?</h2>
+        <p>Dam diwajibkan bagi jamaah yang:</p>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Melanggar larangan ihram</h4><p>Seperti mencukur rambut, memotong kuku, memakai parfum, atau memakai pakaian berjahit bagi laki-laki.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Meninggalkan amalan wajib haji</h4><p>Seperti tidak mabit di Mina atau Muzdalifah, atau tidak tawaf wada'.</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Melakukan pelanggaran berat</h4><p>Seperti jimak sebelum tahallul yang menyebabkan haji atau umroh batal.</p></div></div>
+        </div>
+
+        <h2>Ringkasan Semua Jenis Dam</h2>
+        <table class="materi-table">
+          <thead><tr><th>Jenis Pelanggaran</th><th>Kewajiban Dam</th><th>Status Ibadah</th></tr></thead>
+          <tbody>
+            <tr><td>Jimak sebelum tahallul awal (haji)</td><td>1 unta → sapi → 7 kambing → sedekah → puasa</td><td class="batal">Batal + Wajib Qadha</td></tr>
+            <tr><td>Jimak setelah tahallul awal (haji)</td><td>1 ekor kambing/domba</td><td class="sah">Tetap Sah</td></tr>
+            <tr><td>Jimak sebelum tahallul (umroh)</td><td>1 ekor kambing/domba</td><td class="batal">Batal + Wajib Qadha</td></tr>
+            <tr><td>Meninggalkan wajib haji</td><td>1 kambing / puasa 10 hari</td><td class="sah">Tetap Sah</td></tr>
+            <tr><td>Fidyah (rambut, kuku, parfum, dll.)</td><td>1 kambing ATAU puasa 3 hari ATAU sedekah</td><td class="sah">Tetap Sah</td></tr>
+            <tr><td>Membunuh binatang buruan</td><td>Hewan sepadan → sedekah → puasa</td><td class="sah">Tetap Sah</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.3 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-3">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.3 Dam Jimak Sebelum Tahallul Awal</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±7 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box danger">
+          <strong>🚨 Dam Terberat dalam Haji</strong>
+          Ini adalah dam terberat dalam seluruh rangkaian ibadah haji. Tidak hanya membatalkan haji, tetapi juga mewajibkan penyembelihan hewan yang paling tinggi nilainya.
+        </div>
+
+        <h2>Urutan Kewajiban Dam</h2>
+        <p>Para ulama menetapkan urutan penggantian jika jamaah tidak mampu memenuhi dam unta:</p>
+
+        <div class="dam-chain">
+          <div class="dam-item">🐪<br>1 Ekor Unta</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">🐄<br>1 Ekor Sapi</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">🐑🐑🐑<br>7 Ekor Kambing</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">💰<br>Sedekah Seharga Unta</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">🌙<br>Puasa<br>(1 mud = 1 hari)</div>
+        </div>
+
+        <div class="alert-box warning">
+          <strong>⚠️ Kewajiban Ganda (Kumulatif)</strong>
+          Selain membayar dam, jamaah juga wajib:<br>
+          1. <strong>Meneruskan</strong> ibadah haji hingga selesai meski sudah batal<br>
+          2. <strong>Mengqadha</strong> hajinya pada tahun berikutnya<br><br>
+          Kedua kewajiban ini bersifat kumulatif — bukan pilihan!
+        </div>
+
+        <h2>Perbedaan: Sebelum vs Sesudah Tahallul Awal</h2>
+        <table class="materi-table">
+          <thead><tr><th>Kondisi</th><th>Status Haji</th><th>Dam</th><th>Qadha?</th></tr></thead>
+          <tbody>
+            <tr><td>Jimak <strong>sebelum</strong> tahallul awal</td><td class="batal">BATAL</td><td>1 Unta (atau penggantinya)</td><td class="batal">Wajib Qadha</td></tr>
+            <tr><td>Jimak <strong>setelah</strong> tahallul awal</td><td class="sah">SAH</td><td>1 Kambing/Domba</td><td class="sah">Tidak Perlu</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.4 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-4">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.4 Dam Jimak Setelah Tahallul & Dam Umroh</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±6 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <h2>A. Jimak Setelah Tahallul Awal (Haji Tetap Sah)</h2>
+        <p>Apabila jimak terjadi <strong>setelah tahallul awal</strong> — yaitu setelah jamaah sudah melempar jumrah Aqabah dan mencukur rambut — maka haji <strong>tidak batal</strong>. Namun perbuatan tersebut tetap melanggar ketentuan karena jamaah belum sepenuhnya bebas dari ihram (belum tawaf ifadhah).</p>
+
+        <div class="alert-box success">
+          <strong>Kewajiban:</strong><br>
+          • Haji tetap sah — tidak perlu diqadha<br>
+          • Dam: 1 ekor kambing atau domba<br>
+          • Wajib segera bertaubat dan melanjutkan ibadah (termasuk tawaf ifadhah)
+        </div>
+
+        <h2>B. Jimak dalam Umroh (Umroh Batal)</h2>
+        <p>Dalam umroh, jimak yang dilakukan <strong>sebelum tahallul</strong> menyebabkan umroh batal. Seperti halnya haji, jamaah wajib meneruskan ibadah hingga selesai, lalu mengqadhanya di waktu lain.</p>
+        <p>Meskipun umroh disebut 'haji kecil', larangan dan konsekuensinya tetap serius.</p>
+
+        <div class="alert-box warning">
+          <strong>Kewajiban (Jimak dalam Umroh):</strong><br>
+          • Umroh batal — wajib diteruskan hingga selesai<br>
+          • Wajib qadha umroh di waktu lain<br>
+          • Dam: 1 ekor kambing atau domba
+        </div>
+
+        <h2>Perbandingan Ringkas</h2>
+        <table class="materi-table">
+          <thead><tr><th>Kasus</th><th>Status</th><th>Dam</th><th>Qadha?</th></tr></thead>
+          <tbody>
+            <tr><td>Jimak sebelum tahallul awal (Haji)</td><td class="batal">Batal</td><td>1 Unta</td><td class="batal">Wajib</td></tr>
+            <tr><td>Jimak setelah tahallul awal (Haji)</td><td class="sah">Sah</td><td>1 Kambing</td><td class="sah">Tidak</td></tr>
+            <tr><td>Jimak sebelum tahallul (Umroh)</td><td class="batal">Batal</td><td>1 Kambing</td><td class="batal">Wajib</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.5 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-5">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.5 Dam karena Meninggalkan Wajib Haji</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±5 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box info">
+          <strong>📌 Wajib Haji ≠ Rukun Haji</strong>
+          Meninggalkan <strong>wajib haji</strong> tidak membatalkan haji, tetapi mewajibkan dam. Berbeda dengan meninggalkan rukun yang langsung membatalkan.
+        </div>
+
+        <h2>Contoh-contoh Wajib Haji</h2>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Ihram dari miqat yang benar</h4><p>Miqat adalah batas wilayah yang harus dilalui jamaah sebelum memasuki ihram.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Mabit di Muzdalifah</h4><p>Bermalam di Muzdalifah setelah wuquf di Arafah.</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Mabit di Mina</h4><p>Bermalam di Mina selama hari-hari tasyrik (11–13 Zulhijjah).</p></div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-content"><h4>Melempar Jumrah</h4><p>Melontar tiga jumrah setiap hari tasyrik.</p></div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-content"><h4>Tawaf Wada'</h4><p>Tawaf perpisahan sebelum meninggalkan Makkah.</p></div></div>
+        </div>
+
+        <h2>Kewajiban Dam</h2>
+        <div class="dam-chain">
+          <div class="dam-item">🐑<br>1 Ekor Kambing</div>
+          <span class="arrow">ATAU</span>
+          <div class="dam-item">🌙<br>Puasa 3 hari di tanah haram<br>+ 7 hari setelah pulang<br>(= 10 hari)</div>
+        </div>
+
+        <div class="alert-box success">
+          <strong>Dasar Hukum</strong>
+          Ketentuan ini berdasarkan firman Allah SWT dalam <strong>QS. Al-Baqarah: 196</strong>.
+        </div>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 5.6 (MATERI BARU)
+           ============================== -->
+      <div class="materi-panel" id="panel-5-6">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 5 · Pembatal, Dam & Kafarat</div>
+          <h1 class="materi-title">5.6 Dam Fidyah & Dam Berburu</h1>
+          <div class="materi-meta"><span>📚 Materi Teks</span><span>⏱ ±6 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <h2>A. Dam Fidyah — Larangan Ihram Ringan</h2>
+        <p>Ketika seseorang <strong>terpaksa</strong> melanggar larangan ihram seperti mencukur rambut, memotong kuku, memakai parfum, atau memakai pakaian berjahit (bagi laki-laki) karena sakit atau keperluan mendesak — ia dikenakan dam fidyah.</p>
+
+        <div class="alert-box success">
+          <strong>Haji/Umroh tetap sah</strong>, namun pelanggaran ini tidak boleh dibiarkan tanpa tebusan.
+        </div>
+
+        <h2>Pilihan Dam Fidyah (Bebas Pilih Salah Satu)</h2>
+        <div class="pilihan-grid">
+          <div class="pilihan-item">
+            <div class="pilihan-icon">🐑</div>
+            <strong>Pilihan A</strong>
+            Menyembelih 1 ekor kambing atau domba
+          </div>
+          <div class="pilihan-item">
+            <div class="pilihan-icon">🌙</div>
+            <strong>Pilihan B</strong>
+            Berpuasa selama 3 hari
+          </div>
+          <div class="pilihan-item">
+            <div class="pilihan-icon">🌾</div>
+            <strong>Pilihan C</strong>
+            Bersedekah 3 sha' (±7,5 kg beras) kepada 6 fakir miskin
+          </div>
+        </div>
+
+        <div class="alert-box info">
+          <strong>💡 Keluasan Pilihan</strong>
+          Keluasan tiga pilihan ini merupakan bentuk kemudahan (<em>takhfif</em>) dari Allah SWT bagi hamba-Nya yang memiliki keterbatasan.
+        </div>
+
+        <hr class="divider" />
+
+        <h2>B. Dam Membunuh atau Berburu Binatang Darat</h2>
+        <p>Allah SWT secara eksplisit melarang perburuan bagi orang yang berihram, sebagaimana dalam <strong>QS. Al-Maidah: 95</strong>. Jika jamaah membunuh binatang buruan darat — sengaja maupun tidak — ia wajib membayar dam yang sepadan.</p>
+
+        <h2>Urutan Kewajiban Dam Berburu</h2>
+        <div class="dam-chain">
+          <div class="dam-item">🦌<br>Sembelih hewan sepadan<br>(dinilai 2 orang adil)</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">🤲<br>Beri makan fakir miskin<br>seharga hewan</div>
+          <span class="arrow">→</span>
+          <div class="dam-item">🌙<br>Puasa<br>(1 mud = 1 hari)</div>
+        </div>
+
+        <h2>Ringkasan Semua Jenis Dam</h2>
+        <table class="materi-table">
+          <thead><tr><th>Jenis Dam</th><th>Akibat Pelanggaran</th><th>Status Ibadah</th></tr></thead>
+          <tbody>
+            <tr><td>Dam terberat (jimak sebelum tahallul)</td><td>1 Unta → Sapi → 7 Kambing → Sedekah → Puasa</td><td class="batal">Batal + Qadha</td></tr>
+            <tr><td>Dam sedang (jimak setelah tahallul / dalam umroh)</td><td>1 Kambing/Domba</td><td class="sah">Sah / Batal+Qadha</td></tr>
+            <tr><td>Dam wajib haji</td><td>1 Kambing ATAU puasa 10 hari</td><td class="sah">Tetap Sah</td></tr>
+            <tr><td>Dam fidyah</td><td>Kambing ATAU puasa 3 hari ATAU sedekah</td><td class="sah">Tetap Sah</td></tr>
+            <tr><td>Dam berburu</td><td>Hewan sepadan → Sedekah → Puasa</td><td class="sah">Tetap Sah</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ==============================
+           PANEL MATERI — 6.1
+           ============================== -->
+      <div class="materi-panel" id="panel-6-1">
+        <div class="materi-header">
+          <div class="materi-bab-label">Bab 6 · Latihan & Kuis</div>
+          <h1 class="materi-title">6.1 Uji Kemampuan Kamu!</h1>
+          <div class="materi-meta"><span>🎮 Kuis Interaktif</span><span>⏱ ±15 menit</span></div>
+        </div>
+        <hr class="divider" />
+
+        <div class="alert-box success">
+          <strong>🎯 Sudah siap diuji?</strong>
+          Sebelum mengerjakan kuis, pastikan kamu sudah mempelajari semua materi dari Bab 1 hingga Bab 5!
+        </div>
+
+        <p>Klik tombol di bawah untuk mengerjakan kuis interaktif dan menguji pemahamanmu tentang materi Haji & Umroh:</p>
+
+        <div style="text-align:center; margin: 32px 0;">
+          <a href="https://gemini.google.com/share/ce94357c2f99" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:10px;background:var(--primary);color:white;padding:16px 36px;border-radius:var(--radius-full);font-weight:700;font-size:1.05rem;box-shadow:0 4px 14px rgba(46,125,50,0.35);transition:var(--transition);"
+            onmouseover="this.style.background='var(--primary-dark)'"
+            onmouseout="this.style.background='var(--primary)'"
+          >
+            🚀 Mulai Kuis Sekarang
+          </a>
+        </div>
+
+        <div class="alert-box info">
+          <strong>💡 Catatan</strong>
+          Kuis akan terbuka di tab baru. Setelah selesai, kembali ke halaman ini untuk menandai materi ini sebagai selesai.
+        </div>
+
+        <h2>Topik yang Diujikan</h2>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Konsep Dasar Haji & Umroh</h4><p>Pengertian, hukum, syarat wajib, dan perbedaan haji dan umroh.</p></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Alur Rangkaian Ibadah</h4><p>Urutan pelaksanaan haji dari ihram hingga tawaf wada'.</p></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Pembatal, Dam & Kafarat</h4><p>Hal-hal yang membatalkan haji, jenis-jenis dam, dan konsekuensinya.</p></div></div>
+        </div>
+      </div>
+
+      <!-- Navigasi Bawah -->
+      <div class="materi-nav" id="materiNav" style="display:none;">
+        <button class="nav-btn prev" id="prevBtn" onclick="navigatePrev()" disabled>← Sebelumnya</button>
+        <button class="done-btn" id="doneBtn" onclick="toggleDone()">☐ Tandai Selesai</button>
+        <button class="nav-btn next" id="nextBtn" onclick="navigateNext()">Selanjutnya →</button>
+      </div>
+
+    </main>
+  </div><!-- /lms-body -->
+
+
+  <script>
+    /* =========================================================
+       JAVASCRIPT LMS — Navigasi sidebar & konten
+       ========================================================= */
+
+    // Daftar semua subbab secara berurutan
+    const allSubbab = [
+      { id: '1-1', label: '1.1 Pengertian Haji & Umroh', bab: 'Bab 1' },
+      { id: '1-2', label: '1.2 Hukum Haji & Umroh', bab: 'Bab 1' },
+      { id: '1-3', label: '1.3 Perbedaan Haji dan Umroh', bab: 'Bab 1' },
+      { id: '1-4', label: '1.4 Syarat Wajib', bab: 'Bab 1' },
+      { id: '1-5', label: '1.5 Dalil dan Niat', bab: 'Bab 1' },
+      { id: '1-6', label: '1.6 Hal-hal yang Membatalkan', bab: 'Bab 1' },
+      { id: '2-1', label: '2.1 Alur Ibadah Haji', bab: 'Bab 2' },
+      { id: '2-2', label: '2.2 Alur Ibadah Umroh', bab: 'Bab 2' },
+      { id: '3-1', label: '3.1 Keutamaan Makkah & Madinah', bab: 'Bab 3' },
+      { id: '3-2', label: '3.2 Adab di Masjid Nabawi', bab: 'Bab 3' },
+      { id: '3-3', label: '3.3 Situs Sejarah', bab: 'Bab 3' },
+      { id: '4-1', label: '4.1 Kumpulan Doa Manasik', bab: 'Bab 4' },
+      { id: '5-1', label: '5.1 Hal-hal Pembatal', bab: 'Bab 5' },
+      { id: '5-2', label: '5.2 Pengertian & Jenis Dam', bab: 'Bab 5' },
+      { id: '5-3', label: '5.3 Dam Jimak Sebelum Tahallul', bab: 'Bab 5' },
+      { id: '5-4', label: '5.4 Dam Jimak Setelah Tahallul', bab: 'Bab 5' },
+      { id: '5-5', label: '5.5 Dam Wajib Haji', bab: 'Bab 5' },
+      { id: '5-6', label: '5.6 Dam Fidyah & Berburu', bab: 'Bab 5' },
+      { id: '6-1', label: '6.1 Uji Kemampuan', bab: 'Bab 6' },
+    ];
+
+    const totalMateri = allSubbab.length;
+    let currentId = null;
+    let doneSet = new Set(); // Menyimpan ID subbab yang sudah selesai
+
+    /* -------------------------------------------------------
+       Fungsi: Muat materi yang dipilih
+    ------------------------------------------------------- */
+    function loadMateri(id, linkEl) {
+      // Sembunyikan welcome screen dan semua panel
+      document.getElementById('welcomeScreen').style.display = 'none';
+      document.querySelectorAll('.materi-panel').forEach(p => p.classList.remove('active'));
+
+      // Tampilkan panel yang dipilih
+      const panel = document.getElementById('panel-' + id);
+      if (panel) panel.classList.add('active');
+
+      // Update state aktif di sidebar
+      document.querySelectorAll('.subbab-link').forEach(l => l.classList.remove('active'));
+      if (linkEl) linkEl.classList.add('active');
+
+      // Update breadcrumb
+      const found = allSubbab.find(s => s.id === id);
+      if (found) {
+        document.getElementById('breadcrumbText').textContent = found.bab + ' › ' + found.label;
+      }
+
+      // Update tombol navigasi bawah
+      currentId = id;
+      updateNavButtons();
+      document.getElementById('materiNav').style.display = 'flex';
+
+      // Update tombol "Tandai Selesai"
+      updateDoneBtn();
+
+      // Scroll ke atas konten
+      document.querySelector('.lms-content').scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Tutup sidebar di mobile setelah memilih
+      if (window.innerWidth <= 768) closeSidebar();
+    }
+
+    /* -------------------------------------------------------
+       Fungsi: Buka/tutup bab di sidebar
+    ------------------------------------------------------- */
+    function toggleBab(btn) {
+      const subbabList = btn.nextElementSibling;
+      const isOpen = subbabList.classList.contains('open');
+
+      // Tutup semua bab lain
+      document.querySelectorAll('.subbab-list').forEach(l => l.classList.remove('open'));
+      document.querySelectorAll('.bab-toggle').forEach(b => b.classList.remove('open', 'active'));
+
+      // Buka bab yang diklik jika sebelumnya tertutup
+      if (!isOpen) {
+        subbabList.classList.add('open');
+        btn.classList.add('open', 'active');
+      }
+    }
+
+    /* -------------------------------------------------------
+       Fungsi: Update tombol navigasi Prev/Next
+    ------------------------------------------------------- */
+    function updateNavButtons() {
+      const idx = allSubbab.findIndex(s => s.id === currentId);
+      document.getElementById('prevBtn').disabled = idx <= 0;
+      document.getElementById('nextBtn').disabled = idx >= allSubbab.length - 1;
+    }
+
+    function navigatePrev() {
+      const idx = allSubbab.findIndex(s => s.id === currentId);
+      if (idx > 0) {
+        const prev = allSubbab[idx - 1];
+        // Cari link di sidebar dan klik
+        clickSubbabLink(prev.id);
+      }
+    }
+
+    function navigateNext() {
+      const idx = allSubbab.findIndex(s => s.id === currentId);
+      if (idx < allSubbab.length - 1) {
+        const next = allSubbab[idx + 1];
+        clickSubbabLink(next.id);
+      }
+    }
+
+    // Klik subbab link berdasarkan id
+    function clickSubbabLink(id) {
+      const links = document.querySelectorAll('.subbab-link');
+      links.forEach(link => {
+        if (link.getAttribute('onclick') && link.getAttribute('onclick').includes("'" + id + "'")) {
+          // Buka bab parent di sidebar
+          const subbabList = link.closest('.subbab-list');
+          const babToggle = subbabList.previousElementSibling;
+
+          document.querySelectorAll('.subbab-list').forEach(l => l.classList.remove('open'));
+          document.querySelectorAll('.bab-toggle').forEach(b => b.classList.remove('open', 'active'));
+          subbabList.classList.add('open');
+          babToggle.classList.add('open', 'active');
+
+          loadMateri(id, link);
+        }
+      });
+    }
+
+    /* -------------------------------------------------------
+       Fungsi: Tandai selesai / belum selesai
+    ------------------------------------------------------- */
+    function toggleDone() {
+      if (!currentId) return;
+      const link = document.querySelector('.subbab-link.active');
+
+      if (doneSet.has(currentId)) {
+        doneSet.delete(currentId);
+        if (link) link.classList.remove('done');
+      } else {
+        doneSet.add(currentId);
+        if (link) link.classList.add('done');
+      }
+      updateDoneBtn();
+      updateProgress();
+    }
+
+    function updateDoneBtn() {
+      const btn = document.getElementById('doneBtn');
+      if (doneSet.has(currentId)) {
+        btn.textContent = '✓ Sudah Selesai';
+        btn.classList.add('marked');
+      } else {
+        btn.textContent = '☐ Tandai Selesai';
+        btn.classList.remove('marked');
+      }
+    }
+
+    /* -------------------------------------------------------
+       Fungsi: Update progress bar
+    ------------------------------------------------------- */
+    function updateProgress() {
+      const count = doneSet.size;
+      const pct = Math.round((count / totalMateri) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = count + ' / ' + totalMateri;
+    }
+
+    /* -------------------------------------------------------
+       Hamburger sidebar untuk mobile
+    ------------------------------------------------------- */
+    const sidebarEl = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+      sidebarEl.classList.toggle('open');
+      overlay.classList.toggle('show');
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+
+    function closeSidebar() {
+      sidebarEl.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+
+    /* -------------------------------------------------------
+       Buka bab pertama secara otomatis saat halaman dimuat
+    ------------------------------------------------------- */
+    document.addEventListener('DOMContentLoaded', function () {
+      updateProgress();
+      // Buka bab 5 secara default karena berisi materi baru
+      // Hapus baris berikut jika tidak ingin auto-buka
+    });
+  </script>
+
+</body>
+</html>
